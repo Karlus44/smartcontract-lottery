@@ -42,7 +42,7 @@ def end_lottery():
     # then end the lottery
     tx = fund_with_link(lottery.address)
     tx.wait(1)
-    ending_transaction = lottery.endLottery({"from": account})
+    ending_transaction = lottery.endLottery({"from": account, "gas_limit": 6721975, "allow_revert": True})
     ending_transaction.wait(1)
     time.sleep(180)
     print(f"{lottery.recentWinner()} is the new winner!")

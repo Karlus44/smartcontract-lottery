@@ -2,10 +2,11 @@ from brownie import network, config, accounts, MockV3Aggregator, VRFCoordinatorM
 # from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
-LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development","ganache-local"]
+LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
 
 DECIMALS = 8
 INITIAL_VALUE = 200000000000
+
 
 def get_account(index=None, id=None):
     if index:
@@ -17,11 +18,13 @@ def get_account(index=None, id=None):
         return accounts[0]
     return accounts.add(config["wallets"]["from_key"])
 
+
 contract_to_mock = {
     "eth_usd_price_feed": MockV3Aggregator,
     "vrf_coordinator": VRFCoordinatorMock,
     "link_token": LinkToken,
 }
+
 
 def get_contract(contract_name):
     """ This function will grab the contract addresses from the brownie config in defined, otherwise, it will deploy a mock version of that contract, and return that mock contract.
@@ -38,9 +41,12 @@ def get_contract(contract_name):
             deploy_mocks()
         contract = contract_type[-1]
     else:
-        contract_address = config["networks"][network.show_active()][contract_name]
-        contract = Contract.from_abi(contract_type._name, contract_address, contract_type.abi)
+        contract_address = config["networks"][network.show_active(
+        )][contract_name]
+        contract = Contract.from_abi(
+            contract_type._name, contract_address, contract_type.abi)
     return contract
+
 
 def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     account = get_account()
@@ -49,7 +55,8 @@ def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     VRFCoordinatorMock.deploy(link_token, {"from": account})
     print("Mocks deployed !")
 
-def fund_with_link(contract_address, account=None, link_token=None, amount=100000000000000000): # 0.1 Link
+
+def fund_with_link(contract_address, account=None, link_token=None, amount=10**17):  # 0.1 Link
     account = account if account else get_account()
     link_token = link_token if link_token else get_contract("link_token")
     tx = link_token.transfer(contract_address, amount, {"from": account})
